@@ -32,7 +32,8 @@ class HCTree {
     vector<HCNode*> leaves;
 
   public:
-    explicit HCTree() : root(0), leaves(vector<HCNode*>(256, nullptr)) {}
+    explicit HCTree() : root(nullptr),
+                        leaves(vector<HCNode*>(256, (HCNode*)nullptr)) {}
 
     ~HCTree();
 
