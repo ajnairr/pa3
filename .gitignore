@@ -7,5 +7,6 @@
 !refcompress
 !refuncompress
 !*.h
+!*.hpp
 !*.cpp
 !*.pdf
