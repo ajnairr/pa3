@@ -16,9 +16,9 @@ using namespace std;
  *  do the right thing on HCNodes.
  */
 class HCNodePtrComp {
-public:
+  public:
     bool operator()(HCNode*& lhs, HCNode*& rhs) const {
-        return *lhs < *rhs;
+      return *lhs < *rhs;
     }
 };
 
@@ -27,14 +27,12 @@ public:
  *  of unsigned chars.
  */
 class HCTree {
-private:
+  private:
     HCNode* root;
     vector<HCNode*> leaves;
 
-public:
-    explicit HCTree() : root(0) {
-        leaves = vector<HCNode*>(256, (HCNode*) 0);
-    }
+  public:
+    explicit HCTree() : root(0), leaves(vector<HCNode*>(256, nullptr)) {}
 
     ~HCTree();
 
