@@ -5,8 +5,8 @@
 #include <vector>
 #include <fstream>
 #include "HCNode.hpp"
-#include "BitInputStream.hpp"
-#include "BitOutputStream.hpp"
+// #include "BitInputStream.hpp"
+// #include "BitOutputStream.hpp"
 
 using namespace std;
 
@@ -22,20 +22,16 @@ class HCNodePtrComp {
     }
 };
 
+typedef priority_queue<HCNode*, vector<HCNode*>, HCNodePtrComp> huffman_queue;
+
 /** A Huffman Code Tree class.
  *  Not very generic:  Use only if alphabet consists
  *  of unsigned chars.
  */
 class HCTree {
-  private:
-    HCNode* root;
-    vector<HCNode*> leaves;
-
   public:
     explicit HCTree() : root(nullptr),
                         leaves(vector<HCNode*>(256, (HCNode*)nullptr)) {}
-
-    ~HCTree();
 
     /** Use the Huffman algorithm to build a Huffman coding trie.
      *  PRECONDITION: freqs is a vector of ints, such that freqs[i] is
@@ -50,7 +46,7 @@ class HCTree {
      *  PRECONDITION: build() has been called, to create the coding
      *  tree, and initialize root pointer and leaves vector.
      */
-    void encode(byte symbol, BitOutputStream& out) const;
+    // void encode(byte symbol, BitOutputStream& out) const;
 
     /** Write to the given ofstream
      *  the sequence of bits (as ASCII) coding the given symbol.
@@ -66,7 +62,7 @@ class HCTree {
      *  PRECONDITION: build() has been called, to create the coding
      *  tree, and initialize root pointer and leaves vector.
      */
-    int decode(BitInputStream& in) const;
+    // int decode(BitInputStream& in) const;
 
     /** Return the symbol coded in the next sequence of bits (represented as
      *  ASCII text) from the ifstream.
@@ -77,6 +73,14 @@ class HCTree {
      */
     int decode(ifstream& in) const;
 
+    ~HCTree();
+
+  private:
+    HCNode* root;
+    vector<HCNode*> leaves;
+
+    void deleteAll(HCNode* node);
+    void encode(byte symbol, ofstream& out) const;
 };
 
 #endif // HCTREE_H

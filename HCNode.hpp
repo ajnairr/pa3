@@ -19,24 +19,19 @@ class HCNode {
   HCNode* c1;  // pointer to '1' child
   HCNode* p;   // pointer to parent
 
-  HCNode(int count,
-      byte symbol,
-      HCNode* c0 = nullptr,
-      HCNode* c1 = nullptr,
-      HCNode* p = nullptr)
-    : count(count), symbol(symbol), c0(c0), c1(c1), p(p) {}
+  HCNode(int count, byte symbol,
+         HCNode* c0 = nullptr, HCNode* c1 = nullptr, HCNode* p = nullptr) :
+                           count(count), symbol(symbol), c0(c0), c1(c1), p(p) {}
 
   /** Less-than comparison, so HCNodes will work in std::priority_queue
    *  We want small counts to have high priority.
    *  And we want to break ties deterministically.
    */
   bool operator<(const HCNode& other) {
-    // if counts are different, just compare counts
-    if (this->count != other.count) {
-      return this->count > other.count;
-    }
-    // counts are equal. use symbol value to break tie.
-    return this->symbol < other.symbol;
+    // compare counts if counts are different. otherwise compare symbols to
+    //   break the tie.
+    return (this->count != other.count) ? this->count > other.count :
+                                          this->symbol < other.symbol;
   }
 };
 
