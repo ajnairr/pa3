@@ -31,7 +31,7 @@ class HCNode {
     // compare counts if counts are different. otherwise compare symbols to
     //   break the tie.
     return (this->count != other.count) ? this->count > other.count :
-                                          this->symbol < other.symbol;
+                                          this->symbol > other.symbol;
   }
 };
 

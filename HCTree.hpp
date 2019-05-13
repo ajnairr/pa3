@@ -30,8 +30,9 @@ typedef priority_queue<HCNode*, vector<HCNode*>, HCNodePtrComp> huffman_queue;
  */
 class HCTree {
   public:
-    explicit HCTree() : root(nullptr),
-                        leaves(vector<HCNode*>(256, (HCNode*)nullptr)) {}
+    explicit HCTree() : root(0) {
+      leaves = vector<HCNode*>(256, (HCNode*)0);
+    }
 
     /** Use the Huffman algorithm to build a Huffman coding trie.
      *  PRECONDITION: freqs is a vector of ints, such that freqs[i] is
@@ -80,7 +81,7 @@ class HCTree {
     vector<HCNode*> leaves;
 
     void deleteAll(HCNode* node);
-    void encode(byte symbol, ofstream& out) const;
+    void encode(HCNode* node, ofstream& out) const;
 };
 
 #endif // HCTREE_H

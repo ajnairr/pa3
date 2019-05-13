@@ -1,22 +1,19 @@
-# A simple makefile for CSE 100 P3
+# A simple makefile for CSE 100 P2
 
-CC=g++
-CXXFLAGS=-std=c++11 -g
+# We use this in order to feed in the correct version of g++
+# (version 4.8) where it's installed under a different name in
+# Gradescope. Change the CXX variable assignment at your own risk.
+CXX ?= g++
+CXXFLAGS=-std=c++11 -g -Wall
 LDFLAGS=-g
 
 all: compress uncompress
 
-compress: BitInputStream.o BitOutputStream.o HCNode.o HCTree.o
+compress: HCTree.o
 
-uncompress: BitInputStream.o BitOutputStream.o HCNode.o HCTree.o
+uncompress: HCTree.o
 
-HCTree.o: BitInputStream.hpp BitOutputStream.hpp HCNode.hpp HCTree.hpp
-
-HCNode.o: HCNode.hpp
-
-BitOutputStream.o: BitOutputStream.hpp
-
-BitInputStream.o: BitInputStream.hpp
+HCTree.o: HCTree.hpp
 
 clean:
-	rm -f compress uncompress *.o core*
+	rm -f compress uncompress *.o core* *~

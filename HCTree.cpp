@@ -2,22 +2,19 @@
 
 void HCTree::build(const vector<int>& freqs) {
   huffman_queue trees;
-
+  HCNode* tree;
   for(unsigned int i = 0; i < freqs.size(); i++) {
-    if(freqs[i] > 0) {
-      this->leaves[i] = new HCNode(freqs[i], (byte)i);
-      trees.push(this->leaves[i]);
+    if(freqs[i] != 0) {
+      tree = new HCNode(freqs[i], i);
+      this->leaves[i] = tree;
+      trees.push(tree);
     }
-  }
-
-  if(trees.empty()) {
-    return;
   }
 
   HCNode* chZero;
   HCNode* chOne;
   HCNode* parent;
-  while(trees.size > 1) {
+  while(trees.size() > 1) {
     chZero = trees.top();
     trees.pop();
 
@@ -33,7 +30,6 @@ void HCTree::build(const vector<int>& freqs) {
   }
 
   this->root = trees.top();
-  trees.pop();
 }
 
 void HCTree::encode(byte symbol, ofstream& out) const {
@@ -41,22 +37,14 @@ void HCTree::encode(byte symbol, ofstream& out) const {
 }
 
 int HCTree::decode(ifstream& in) const {
-  int codeSym;
-  HCNode* cur = root;
-  while(codeSym = in.get()) {
-    if(!cur)
-      return -1;
-
-    if((byte)codeSym == '0')
-      cur = cur->c0;
-    else
-      cur = cur->c1;
-
-    if(!cur->c0 && !cur->c1)
-      return cur->symbol;
+  unsigned char codeSym = 0;
+  HCNode* cur = this->root;
+  while(cur->c0 && cur->c1) {
+    in >> codeSym;
+    cur = (codeSym == '0') ? cur->c0 : cur->c1;
   }
 
-  return -1;
+  return cur->symbol;
 }
 
 HCTree::~HCTree() {
@@ -85,7 +73,7 @@ void HCTree::encode(HCNode* node, ofstream& out) const {
 
   this->encode(node->p, out);
   if(node->p) {
-    out << (node->p->c0 == node) ? '0' : '1';
+    out << ((node->p->c0 == node) ? '0' : '1');
     out.flush();
   }
 }
