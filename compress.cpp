@@ -57,6 +57,20 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  in.close();
+
+  in.open(*(argv + 1), ios::binary | ios::ate);
+
+  if(in.tellg() == 0) {
+    ofstream out(*(argv + 2), ios::binary); 
+    out.close();
+    in.close();
+    return EXIT_SUCCESS;
+  }
+
+  in.close();
+  in.open(*(argv + 1), ios::binary);
+
   vector<int> freqs = countFreqs(*(argv + 1), in);
   HCTree tree = HCTree();
   tree.build(freqs);
