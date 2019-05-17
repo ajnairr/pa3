@@ -3,10 +3,11 @@
 
 #include <queue>
 #include <vector>
+#include <utility>
 #include <fstream>
 #include "HCNode.hpp"
-// #include "BitInputStream.hpp"
-// #include "BitOutputStream.hpp"
+#include "BitInputStream.hpp"
+#include "BitOutputStream.hpp"
 
 using namespace std;
 
@@ -34,6 +35,8 @@ class HCTree {
       leaves = vector<HCNode*>(256, (HCNode*)0);
     }
 
+    HCTree(vector<pair<byte, int>> data);
+
     /** Use the Huffman algorithm to build a Huffman coding trie.
      *  PRECONDITION: freqs is a vector of ints, such that freqs[i] is
      *  the frequency of occurrence of byte i in the message.
@@ -47,7 +50,7 @@ class HCTree {
      *  PRECONDITION: build() has been called, to create the coding
      *  tree, and initialize root pointer and leaves vector.
      */
-    // void encode(byte symbol, BitOutputStream& out) const;
+    void encode(byte symbol, BitOutputStream& out) const;
 
     /** Write to the given ofstream
      *  the sequence of bits (as ASCII) coding the given symbol.
@@ -63,7 +66,7 @@ class HCTree {
      *  PRECONDITION: build() has been called, to create the coding
      *  tree, and initialize root pointer and leaves vector.
      */
-    // int decode(BitInputStream& in) const;
+    int decode(BitInputStream& in) const;
 
     /** Return the symbol coded in the next sequence of bits (represented as
      *  ASCII text) from the ifstream.
@@ -74,6 +77,8 @@ class HCTree {
      */
     int decode(ifstream& in) const;
 
+    void saveTree(BitOutputStream* out);
+
     ~HCTree();
 
   private:
@@ -82,6 +87,8 @@ class HCTree {
 
     void deleteAll(HCNode* node);
     void encode(HCNode* node, ofstream& out) const;
+    void encode(HCNode* node, BitOutputStream& out) const;
+    void saveHelper(HCNode* node, BitOutputStream* out, int d);
 };
 
 #endif // HCTREE_H

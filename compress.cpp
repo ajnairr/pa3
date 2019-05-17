@@ -6,40 +6,34 @@
 
 using namespace std;
 
-vector<int> countFreqs(string inFile, ifstream& in) {
+vector<int> countFreqs(string inFile, ifstream& in, int* count, int* numUniq) {
   vector<int> freqs = vector<int>(256, 0);
-  int symbol;
+  int symbol = -1;
 
-  while(true) {
-    symbol = in.get();
-    if(in.eof()) {
-      in.close();
-      in.open(inFile, ios::binary);
-      break;
+  do{
+    if(symbol >= 0 && freqs[symbol]++ == 0) {
+      ++*numUniq;
     }
-    freqs[symbol]++;
-  }
+    symbol = in.get();
+    ++*count;
+  } while(!in.eof());
+
+  --*count;
+
+  in.close();
+  in.open(inFile, ios::binary);
 
   return freqs;
 }
 
-void writeHeader(ofstream& out, vector<int> freqs) {
-  for(vector<int>::iterator it = freqs.begin(); it != freqs.end(); it++) {
-    out << *it << endl;
-  }
-}
-
-void encodeFile(ifstream& in, ofstream& out, HCTree& tree) {
-  int symbol;
-  while(true) {
+void encodeFile(ifstream& in, BitOutputStream& out, HCTree& tree) {
+  int symbol = -1;
+  do {
+    if(symbol >= 0)
+      tree.encode((unsigned char)symbol, out);
     symbol = in.get();
-    if(in.eof()) {
-      in.close();
-      break;
-    }
-    tree.encode((unsigned char)symbol, out);
-  }
-  out.close();
+  } while(!in.eof());
+  out.flush();
 }
 
 int main(int argc, char** argv) {
@@ -70,15 +64,29 @@ int main(int argc, char** argv) {
 
   in.close();
   in.open(*(argv + 1), ios::binary);
-
-  vector<int> freqs = countFreqs(*(argv + 1), in);
-  HCTree tree = HCTree();
-  tree.build(freqs);
-
   ofstream out(*(argv + 2), ios::binary);
+//size_t outputBegin = out.tellp();
+  int fileSize = 0;
+  int uniqueChars = 0;
 
-  writeHeader(out, freqs);
-  encodeFile(in, out, tree);
+  vector<int> freqs = countFreqs(*(argv + 1), in, &fileSize, &uniqueChars);
+  BitOutputStream bitOut(&out);
+  HCTree tree = HCTree();
+
+  tree.build(freqs);
+  bitOut.writeInt(fileSize);
+  bitOut.writeInt(uniqueChars);
+  tree.saveTree(&bitOut);
+
+  ifstream headerRead(*(argv + 2), ios::binary | ios::ate);
+  size_t headerSize = headerRead.tellg();
+  headerRead.close();
+  cout << "Header size is: " << headerSize << " bytes" << endl;
+
+  encodeFile(in, bitOut, tree);
+
+  in.close();
+  out.close();
 
   return EXIT_SUCCESS;
 }
