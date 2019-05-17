@@ -4,11 +4,10 @@ BitOutputStream::BitOutputStream(std::ofstream* out) :
                                              buffer(0), bitIndex(0), out(out) {}
 
 void BitOutputStream::flush() {
-  this->out->put(static_cast<unsigned char>(this->buffer.to_ulong()));
+  this->out->put(this->buffer);
   this->out->flush();
 
-  this->buffer.reset();
-  this->bitIndex = 0;
+  this->buffer = this->bitIndex = 0;
 }
 
 void BitOutputStream::writeBit(int bit) {
@@ -16,7 +15,7 @@ void BitOutputStream::writeBit(int bit) {
     this->flush();
   }
 
-  this->buffer[this->bitIndex++] = bit;
+  this->buffer |= ((unsigned int)bit) << this->bitIndex++;
 }
 
 void BitOutputStream::writeByte(int bite) {

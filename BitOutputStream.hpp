@@ -2,7 +2,6 @@
 #define BITOUTPUTSTREAM_HPP
 
 #include <fstream>
-#include <bitset>
 
 class BitOutputStream {
   public:
@@ -14,8 +13,8 @@ class BitOutputStream {
     void writeInt(int i);
 
   private:
-    std::bitset<8> buffer;
-    int bitIndex;
+    unsigned char buffer;
+    unsigned int bitIndex;
     std::ofstream* out;
 };
 

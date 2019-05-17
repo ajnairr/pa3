@@ -2,7 +2,6 @@
 #define BITINPUTSTREAM_HPP
 
 #include <fstream>
-#include <bitset>
 
 class BitInputStream {
   public:
@@ -13,8 +12,8 @@ class BitInputStream {
     int readInt();
 
   private:
-    std::bitset<8> buffer;
-    int bitIndex;
+    unsigned char buffer;
+    unsigned int bitIndex;
     std::ifstream* in;
 };
 
