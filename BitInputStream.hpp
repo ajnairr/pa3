@@ -1,7 +1,6 @@
 #ifndef BITINPUTSTREAM_HPP
 #define BITINPUTSTREAM_HPP
 
-#include <iostream>
 #include <fstream>
 #include <bitset>
 

@@ -65,7 +65,6 @@ int main(int argc, char** argv) {
   in.close();
   in.open(*(argv + 1), ios::binary);
   ofstream out(*(argv + 2), ios::binary);
-//size_t outputBegin = out.tellp();
   int fileSize = 0;
   int uniqueChars = 0;
 

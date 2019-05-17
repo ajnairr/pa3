@@ -44,14 +44,14 @@ int main(int argc, char** argv) {
   int fileSize = bitIn.readInt();
   int numSymbols = bitIn.readInt();
 
-  tree_data ordered(numSymbols, make_pair(0, 0));
+  tree_data treeData(numSymbols, make_pair(0, 0));
 
-  for(tree_data::iterator it = ordered.begin(); it != ordered.end(); it++) {
+  for(tree_data::iterator it = treeData.begin(); it != treeData.end(); it++) {
     (*it).first = bitIn.readByte();
     (*it).second = bitIn.readByte();
   }
 
-  HCTree tree(ordered);
+  HCTree tree(treeData);
   for(int i = 0; i < fileSize; i++) {
     bitOut.writeByte((unsigned char)tree.decode(bitIn));
   }
