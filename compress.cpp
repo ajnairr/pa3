@@ -20,19 +20,22 @@ vector<int> countFreqs(string inFile, ifstream& in, int* count, int* numUniq) {
 
   --*count;
 
-  in.close();
-  in.open(inFile, ios::binary);
+  in.clear();
+  in.seekg(0, ios::beg);
 
   return freqs;
 }
 
-void encodeFile(ifstream& in, BitOutputStream& out, HCTree& tree) {
+void encodeFile(ifstream& in, BitOutputStream& out, HCTree* tree) {
   int symbol = -1;
+
   do {
     if(symbol >= 0)
-      tree.encode((unsigned char)symbol, out);
+      tree->encode((unsigned char)symbol, out);
+
     symbol = in.get();
   } while(!in.eof());
+
   out.flush();
 }
 
@@ -51,39 +54,40 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  in.close();
-
-  in.open(*(argv + 1), ios::binary | ios::ate);
+  in.clear();
+  in.seekg(0, ios::end);
 
   if(in.tellg() == 0) {
+    in.close();
+
     ofstream out(*(argv + 2), ios::binary); 
     out.close();
-    in.close();
+
     return EXIT_SUCCESS;
   }
-
-  in.close();
-  in.open(*(argv + 1), ios::binary);
+  in.clear();
+  in.seekg(0, ios::beg);
   ofstream out(*(argv + 2), ios::binary);
   int fileSize = 0;
   int uniqueChars = 0;
 
   vector<int> freqs = countFreqs(*(argv + 1), in, &fileSize, &uniqueChars);
   BitOutputStream bitOut(&out);
-  HCTree tree = HCTree();
+  HCTree* tree = new HCTree();
 
-  tree.build(freqs);
+  tree->build(freqs);
   bitOut.writeInt(fileSize);
   bitOut.writeInt(uniqueChars);
-  tree.saveTree(&bitOut);
+  tree->saveTree(&bitOut);
 
-  ifstream headerRead(*(argv + 2), ios::binary | ios::ate);
-  size_t headerSize = headerRead.tellg();
-  headerRead.close();
-  cout << "Header size is: " << headerSize << " bytes" << endl;
+  ifstream* headerRead = new ifstream(*(argv + 2), ios::binary | ios::ate);
+  cout << "Header size is: " << (size_t)headerRead->tellg() << " bytes" << endl;
+  headerRead->close();
+  delete headerRead;
 
   encodeFile(in, bitOut, tree);
 
+  delete tree;
   in.close();
   out.close();
 

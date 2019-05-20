@@ -23,20 +23,20 @@ int main(int argc, char** argv) {
     cout << "Invalid input file. Please try again." << endl;
     return EXIT_FAILURE;
   }
-  in.close();
+  in.clear();
 
-  in.open(*(argv + 1), ios::binary | ios::ate);
+  in.seekg(0, ios::end);
   if(in.tellg() == 0) {
-    ofstream out(*(argv + 2), ios::binary);
     in.close();
+
+    ofstream out(*(argv + 2), ios::binary);
     out.close();
 
     return EXIT_SUCCESS;
   }
-  in.close();
+  in.clear();
 
-
-  in.open(*(argv + 1), ios::binary);
+  in.seekg(0, ios::beg);
   ofstream out(*(argv + 2), ios::binary);
   BitInputStream bitIn(&in);
   BitOutputStream bitOut(&out);
@@ -51,11 +51,12 @@ int main(int argc, char** argv) {
     (*it).second = bitIn.readByte();
   }
 
-  HCTree tree(treeData);
+  HCTree* tree = new HCTree(treeData);
   for(int i = 0; i < fileSize; i++) {
-    bitOut.writeByte((unsigned char)tree.decode(bitIn));
+    bitOut.writeByte((unsigned char)tree->decode(bitIn));
   }
 
+  delete tree;
   out.close();
   in.close();
 
