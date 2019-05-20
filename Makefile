@@ -1,4 +1,4 @@
-# A simple makefile for CSE 100 P2
+# A simple makefile for CSE 100 PA3
 
 # We use this in order to feed in the correct version of g++
 # (version 4.8) where it's installed under a different name in
@@ -9,11 +9,13 @@ LDFLAGS=-g
 
 all: compress uncompress
 
-compress: HCTree.o BitInputStream.o BitOutputStream.o
+compress: HCNode.o HCTree.o BitInputStream.o BitOutputStream.o
 
-uncompress: HCTree.o BitInputStream.o BitOutputStream.o
+uncompress: HCNode.o HCTree.o BitInputStream.o BitOutputStream.o
 
 HCTree.o: HCTree.hpp
+
+HCNode.o: HCNode.hpp
 
 BitInputStream.o: BitInputStream.hpp
 

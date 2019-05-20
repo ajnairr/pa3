@@ -5,22 +5,25 @@ HCTree::HCTree(std::vector<std::pair<byte, int>> data) :
   HCNode* cur = this->root;
   HCNode** newNodePtr;
   bool done;
-  int d = 0;
+  int curDepth = 0;
 
   for(std::vector<std::pair<byte, int>>::iterator it = data.begin();
                                                      it != data.end(); it++) {
-    while(d < (*it).second) {
-      newNodePtr = (!cur->c0) ? &cur->c0 : &cur->c1;
+    while(curDepth < (*it).second) {
+      newNodePtr = (!cur->getZeroChild()) ? cur->getZeroChildPtr() :
+                                            cur->getOneChildPtr();
       *newNodePtr = new HCNode(0, 0, nullptr, nullptr, cur);
       cur = *newNodePtr;
-      d++;
+      curDepth++;
     }
-    cur->symbol = (*it).first;
+
+    cur->setSymbol((*it).first);
     done = false;
+
     while(cur != this->root && !done) {
-      done = !cur->p->c1;
-      cur = cur->p;
-      d--;
+      done = !cur->getParent()->getOneChild();
+      cur = cur->getParent();
+      curDepth--;
     }
   }
 }
@@ -46,10 +49,11 @@ void HCTree::build(const vector<int>& freqs) {
     chOne = trees.top();
     trees.pop();
 
-    parent = new HCNode(chZero->count + chOne->count, chOne->symbol,
-                                                                 chZero, chOne);
+    parent = new HCNode(chZero->getCount() + chOne->getCount(),
+                                             chOne->getSymbol(), chZero, chOne);
 
-    chZero->p = chOne->p = parent;
+    chZero->setParent(parent);
+    chOne->setParent(parent);
 
     trees.push(parent);
   }
@@ -68,22 +72,22 @@ void HCTree::encode(byte symbol, BitOutputStream& out) const {
 int HCTree::decode(ifstream& in) const {
   unsigned char codeSym = 0;
   HCNode* cur = this->root;
-  while(cur->c0 && cur->c1) {
+  while(cur->getZeroChild() && cur->getOneChild()) {
     in >> codeSym;
-    cur = (codeSym == '0') ? cur->c0 : cur->c1;
+    cur = (codeSym == '0') ? cur->getZeroChild() : cur->getOneChild();
   }
 
-  return cur->symbol;
+  return cur->getSymbol();
 }
 
 int HCTree::decode(BitInputStream& in) const {
   HCNode* cur = this->root;
 
-  while(cur->c0 && cur->c1) {
-    cur = (in.readBit() == 0) ? cur->c0 : cur->c1;
+  while(cur->getZeroChild() && cur->getOneChild()) {
+    cur = (in.readBit() == 0) ? cur->getZeroChild() : cur->getOneChild();
   }
 
-  return cur->symbol;
+  return cur->getSymbol();
 }
 
 void HCTree::saveTree(BitOutputStream* out) {
@@ -99,13 +103,13 @@ void HCTree::deleteAll(HCNode* node) {
   if(!node)
     return;
 
-  this->deleteAll(node->c0);
-  node->c0 = nullptr;
+  this->deleteAll(node->getZeroChild());
+  node->setZeroChild(nullptr);
 
-  this->deleteAll(node->c1);
-  node->c1 = nullptr;
+  this->deleteAll(node->getOneChild());
+  node->setOneChild(nullptr);
 
-  node->p = nullptr;
+  node->setParent(nullptr);
 
   delete node;
 }
@@ -114,9 +118,9 @@ void HCTree::encode(HCNode* node, ofstream& out) const {
   if(!node)
     return;
 
-  this->encode(node->p, out);
-  if(node->p) {
-    out.put((node->p->c0 == node) ? '0' : '1');
+  this->encode(node->getParent(), out);
+  if(node->getParent()) {
+    out.put((node->getParent()->getZeroChild() == node) ? '0' : '1');
     out.flush();
   }
 }
@@ -124,21 +128,21 @@ void HCTree::encode(HCNode* node, ofstream& out) const {
 void HCTree::encode(HCNode* node, BitOutputStream& out) const {
   if(!node)
     return;
-  this->encode(node->p, out);
-  if(node->p) {
-    out.writeBit((node->p->c0 == node) ? 0 : 1);
+  this->encode(node->getParent(), out);
+  if(node->getParent()) {
+    out.writeBit((node->getParent()->getZeroChild() == node) ? 0 : 1);
   }
 }
 
 void HCTree::saveHelper(HCNode* node, BitOutputStream* out, int d) {
   if(node) {
-    if(!(node->c0 || node->c1)) {
-      out->writeByte(node->symbol);
+    if(!(node->getZeroChild() || node->getOneChild())) {
+      out->writeByte(node->getSymbol());
       out->writeByte(d);
     }
     else {
-      this->saveHelper(node->c0, out, d + 1);
-      this->saveHelper(node->c1, out, d + 1);
+      this->saveHelper(node->getZeroChild(), out, d + 1);
+      this->saveHelper(node->getOneChild(), out, d + 1);
     }
   }
 }

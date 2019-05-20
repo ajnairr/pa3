@@ -32,7 +32,7 @@ typedef priority_queue<HCNode*, vector<HCNode*>, HCNodePtrComp> huffman_queue;
 class HCTree {
   public:
     explicit HCTree() : root(0) {
-      leaves = vector<HCNode*>(256, (HCNode*)0);
+      leaves = vector<HCNode*>(256, (HCNode*)nullptr);
     }
 
     HCTree(vector<pair<byte, int>> data);
