@@ -16,15 +16,12 @@ int BitInputStream::readBit() {
 }
 
 int BitInputStream::readByte() {
-  unsigned char byteRead = this->in->get();
-
-  return (!this->in->eof()) ? byteRead : -1;
+  return (unsigned char)this->in->get();
 }
 
 int BitInputStream::readInt() {
   int intRead;
-
   this->in->read((char*)&intRead, sizeof intRead);
 
-  return (!this->in->eof()) ? intRead : -1;
+  return intRead;
 }
