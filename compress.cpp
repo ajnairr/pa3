@@ -23,10 +23,8 @@ vector<int> countFreqs(string inFile, ifstream& in, int* count, int* numUniq) {
       ++*numUniq;
     }
     symbol = in.get();
-    ++*count;
+    *count += in.gcount();
   } while(!in.eof());
-
-  --*count;
 
   in.clear();
   in.seekg(0, ios::beg);
