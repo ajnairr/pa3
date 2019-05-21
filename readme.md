@@ -11,7 +11,7 @@ Hypothesis: If we were to compress a file before encrypting it, then the
             to shrink the file much at all.
 
 ## Question 2
-__compression BEFORE encryption file size:__ 1.870872 MB
+__compression BEFORE encryption file size:__ 1.870872 MB  
 __compression AFTER  encryption file size:__ 3.289314 MB
 
 These results __do__ agree with my initial hypothesis
