@@ -1,3 +1,11 @@
+/*
+ * Filename: compress.cpp
+ * Author: Ajay Nair
+ * Userid: cs100sp19bg
+ * Date: May 13, 2019
+ * Description: Program that can create a compressed/encoded version of any file
+ *              passed as an argument
+ */
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -57,6 +65,7 @@ int main(int argc, char** argv) {
   in.clear();
   in.seekg(0, ios::end);
 
+  // case if input file is empty: creates an empty output file
   if(in.tellg() == 0) {
     in.close();
 
@@ -71,15 +80,20 @@ int main(int argc, char** argv) {
   int fileSize = 0;
   int uniqueChars = 0;
 
+  // store frequencies of each character in a vector
   vector<int> freqs = countFreqs(*(argv + 1), in, &fileSize, &uniqueChars);
   BitOutputStream bitOut(&out);
   HCTree* tree = new HCTree();
 
+  // build new HCTree with read frequencies
   tree->build(freqs);
-  bitOut.writeInt(fileSize);
-  bitOut.writeInt(uniqueChars);
-  tree->saveTree(&bitOut);
 
+  // write file header for decoder to interpret
+  bitOut.writeInt(fileSize); // save count of chars contained in input
+  bitOut.writeInt(uniqueChars); // save count of unique chars contained in input
+  tree->saveTree(&bitOut); // save data on tree leaf nodes
+
+  // find and print the size of the file header written to the compressed file
   ifstream* headerRead = new ifstream(*(argv + 2), ios::binary | ios::ate);
   cout << "Header size is: " << (size_t)headerRead->tellg() << " bytes" << endl;
   headerRead->close();

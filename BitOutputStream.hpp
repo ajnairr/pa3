@@ -1,3 +1,11 @@
+/*
+ * Filename: BitOutputStream.hpp
+ * Author: Ajay Nair
+ * Userid: cs100sp19bg
+ * Date: May 16, 2019
+ * Description: Class definition for BitOutputStream. Contains declarations for
+ *              all of its members.
+ */
 #ifndef BITOUTPUTSTREAM_HPP
 #define BITOUTPUTSTREAM_HPP
 

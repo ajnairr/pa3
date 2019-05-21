@@ -1,3 +1,12 @@
+/*
+ * Filename: BitInputStream.hpp
+ * Author: Ajay Nair
+ * Userid: cs100sp19bg
+ * Date: May 16, 2019
+ * Description: Contains class definition for BitInputStream, with declarations
+ *              for all of its members.
+ */
+
 #ifndef BITINPUTSTREAM_HPP
 #define BITINPUTSTREAM_HPP
 

@@ -1,5 +1,21 @@
+/*
+ * Filename: HCTree.cpp
+ * Author: Ajay Nair
+ * Userid: cs100sp19bg
+ * Date: May 12, 2019
+ * Description: Definitions for HCTree class member functions.
+ */
 #include "HCTree.hpp"
 
+/*
+ * Function Name: HCTree()
+ * Function Prototype: HCTree(std::vector<std::pair<byte, int>> data);
+ * Description: Constructor for HCTree object. Fills HCTree with the contents of
+ *              the passed vector.
+ * Parameters: data - vector of pairs where each element is made up of a symbol
+ *                    and its frequency.
+ * Return Value: None
+ */
 HCTree::HCTree(std::vector<std::pair<byte, int>> data) : 
                                                         root(new HCNode(0, 0)) {
   HCNode* cur = this->root;
@@ -28,6 +44,15 @@ HCTree::HCTree(std::vector<std::pair<byte, int>> data) :
   }
 }
 
+/*
+ * Function Name: build()
+ * Function Prototype: build(const vector<int>& freqs);
+ * Description: Builds this HCTree using the frequencies in passed vector. Each
+ *              vector index is the integer value of an ASCII character.
+ * Parameters: freqs - vector of frequencies, each element is the frequency of
+ *                     its index value as a character
+ * Return Value: None
+ */
 void HCTree::build(const vector<int>& freqs) {
   huffman_queue trees;
   HCNode* tree;
@@ -61,14 +86,45 @@ void HCTree::build(const vector<int>& freqs) {
   this->root = trees.top();
 }
 
+/*
+ * Function Name: encode()
+ * Function Prototype: void encode(byte symbol, ofstream& out) const;
+ * Description: Writes the huffman code of the given byte to the output stream.
+ *              No compression is used to print the huffman code.
+ * Parameters: symbol - the symbol to be encoded and written to the output
+ *                      stream
+ *             out - reference to the output stream to print the encoded symbol
+ *                   to
+ * Return Value: None
+ */
 void HCTree::encode(byte symbol, ofstream& out) const {
   this->encode(this->leaves[symbol], out);
 }
 
+/*
+ * Function Name: encode()
+ * Function Prototype: void encode(byte symbol, BitOutputStream& out) const;
+ * Description: Writes the huffman code of the given byte to the output stream.
+ *              Compresses code by writing each element of the huffman code as a
+ *              literal bit.
+ * Parameters: symbol - the symbol to be encoded and written to the output
+ *                      stream
+ *             out - reference to the BitOutputStream that will print the
+ *                   encoded symbol to the output stream as a literal bit
+ * Return Value: None
+ */
 void HCTree::encode(byte symbol, BitOutputStream& out) const {
   this->encode(this->leaves[symbol], out);
 }
 
+/*
+ * Function Name: decode()
+ * Function Prototype: int decode(ifstream& in) const;
+ * Description: Reads and decodes the next symbol in an input stream containing
+ *              data encoded using this huffman tree.
+ * Parameters: in - reference to the input stream to read the huffman code from
+ * Return Value: int cast of decoded symbol
+ */
 int HCTree::decode(ifstream& in) const {
   unsigned char codeSym = 0;
   HCNode* cur = this->root;
@@ -80,6 +136,17 @@ int HCTree::decode(ifstream& in) const {
   return cur->getSymbol();
 }
 
+/*
+ * Function Name: decode()
+ * Function Prototype: int decode(BitInputStream& in) const;
+ * Description: Reads and decodes the next symbol in an input stream containing
+ *              data encoded using this huffman tree. The input stream here
+ *              contains the huffman codes as literal bits, instead of char
+ *              representations of bit values.
+ * Parameters: in - reference to BitInputStream containing the huffman code as
+ *                  a stream of literal bits
+ * Return Value: int cast of decoded symbol
+ */
 int HCTree::decode(BitInputStream& in) const {
   HCNode* cur = this->root;
 
@@ -90,15 +157,40 @@ int HCTree::decode(BitInputStream& in) const {
   return cur->getSymbol();
 }
 
+/*
+ * Function Name: saveTree()
+ * Function Prototype: void saveTree(BitOutputStream* out);
+ * Description: Saves contents of this tree object by storing each leaf node's
+ *              data in order from left to right
+ * Parameters: out - pointer to BitOutputStream containing output stream to
+ *                   write HCTree data to
+ * Return Value: None
+ */
 void HCTree::saveTree(BitOutputStream* out) {
   this->saveHelper(this->root, out, 0);
 }
 
+/*
+ * Function Name: ~HCTree()
+ * Function Prototype: ~HCTree();
+ * Description: Destructor for this HCTree object. Deletes memory allocated for
+ *              every node in this tree object.
+ * Parameters: None
+ * Return Value: None
+ */
 HCTree::~HCTree() {
   this->deleteAll(this->root);
   this->root = nullptr;
 }
 
+/*
+ * Function Name: deleteAll()
+ * Function Prototype: void deleteAll(HCNode* node);
+ * Description: Helper function for destructor. Recursively traverses and
+ *              deletes all nodes in the tree
+ * Parameters: node - pointer to root node of subtree to delete.
+ * Return Value: None
+ */
 void HCTree::deleteAll(HCNode* node) {
   if(!node)
     return;
@@ -114,6 +206,17 @@ void HCTree::deleteAll(HCNode* node) {
   delete node;
 }
 
+/*
+ * Function Name: encode()
+ * Function Prototype: void encode(HCNode* node, ofstream& out) const;
+ * Description: Helper function for public encode function. Recursively
+ *              traverses up from leaf node containing symbol to be encoded,
+ *              then unwinds recursion stack once root node is reached to print
+ *              each element of huffman code as a char
+ * Parameters: node - pointer to current node in recursive traversal
+ *             out - reference to output stream to print the huffman code to
+ * Return Value: None
+ */
 void HCTree::encode(HCNode* node, ofstream& out) const {
   if(!node)
     return;
@@ -125,6 +228,18 @@ void HCTree::encode(HCNode* node, ofstream& out) const {
   }
 }
 
+/*
+ * Function Name: encode()
+ * Function Prototype: void encode(HCNode* node, BitOutputStream& out) const;
+ * Description: Helper function for public encode function. Recursively
+ *              traverses up from leaf node containing symbol to be encoded,
+ *              then unwinds recursion stack once root node is reached to print
+ *              each element of huffman code as a literal bit
+ * Parameters: node - pointer to current node in recursive traversal
+ *             out - reference to BitOutputStream containing output stream to
+ *                   print the encoded bits to
+ * Return Value: None
+ */
 void HCTree::encode(HCNode* node, BitOutputStream& out) const {
   if(!node)
     return;
@@ -134,6 +249,20 @@ void HCTree::encode(HCNode* node, BitOutputStream& out) const {
   }
 }
 
+/*
+ * Function Name: saveHelper()
+ * Function Prototype: void saveHelper(
+ *                                   HCNode* node, BitOutputStream* out, int d);
+ * Description: Helper function for saveTree function. Recursively traverses to
+ *              each leaf node in tree and writes its data to the output stream.
+ *              Writes leaf node data in order from left-most leaf node, to
+ *              right-most leaf node.
+ * Parameters: node - pointer to current node in recursive traversal
+ *             out - pointer to BitOutputStream containing output stream to
+ *                   print leaf node data to
+ *             d - current traversal depth in tree
+ * Return Value: None
+ */
 void HCTree::saveHelper(HCNode* node, BitOutputStream* out, int d) {
   if(node) {
     if(!(node->getZeroChild() || node->getOneChild())) {

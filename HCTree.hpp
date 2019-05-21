@@ -1,3 +1,10 @@
+/*
+ * Filename: HCTree.hpp
+ * Author: Ajay Nair
+ * Userid: cs100sp19bg
+ * Date: May 12, 2019
+ * Description: Class definition for HCTree object.
+ */
 #ifndef HCTREE_HPP
 #define HCTREE_HPP
 

@@ -1,3 +1,11 @@
+/*
+ * Filename: HCNode.hpp
+ * Author: Ajay Nair
+ * Userid: cs100sp19bg
+ * Date: May 12, 2019
+ * Description: Class definition for HCNode object.
+ */
+
 #ifndef HCNODE_HPP
 #define HCNODE_HPP
 
